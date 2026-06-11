@@ -60,18 +60,18 @@ def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_va
     st.subheader("Análise das variações Δb")
 
     if not any(abs(v) > 1e-9 for v in variacoes):
-        st.info("Nenhuma variação Δb informada. Preencha os campos 'Δb desejado' nas restrições para ver a análise de sensibilidade.")
+        st.info("Nenhuma variação Δb. Preencha os campos 'Δb desejado' nas restrições.")
         return
 
     b_novo = b + np.array(variacoes, dtype=float)
     res2, valor2 = resolver_ppl(c, A, b_novo, maximizar)
 
     if res2 is None:
-        st.error("As variações desejadas tornam o problema inviável.")
+        st.error("As variações deixam o problema inviável.")
         return
 
     delta_estimado = sum(precos_sombra[i] * variacoes[i] for i in range(n_rest))
-    st.success("As variações desejadas são viáveis.")
+    st.success("Variações viáveis.")
 
     colunas = st.columns(2)
     colunas[0].metric("Novo Z ótimo (recalculado)", f"{valor2:.2f}", delta=f"{valor2 - valor:+.2f}")
@@ -96,7 +96,9 @@ def ler_funcao_objetivo(n_var, maximizar) -> list:
 
 def ler_restricoes(n_var, n_rest) -> tuple:
     """Lê a matriz A, o vetor b e as variações Δb desejadas em cada restrição."""
+    
     st.subheader("Restrições  (formato  <= )")
+    
     A, b, variacoes = [], [], []
     for i in range(n_rest):
         st.markdown(f"**Restrição {i+1}**")
@@ -107,11 +109,11 @@ def ler_restricoes(n_var, n_rest) -> tuple:
         A.append(linha)
         b.append(bi)
         variacoes.append(dv)
+    
     return A, b, variacoes
 
 
-
-# Programa principal (monta a tela e liga tudo no botão Resolver)
+# Main feliz
 st.set_page_config(page_title="Resolvedor de PPL - M210")
 st.title("Resolvedor Feliz")
 
