@@ -41,17 +41,14 @@ def mostrar_ponto_otimo(res, valor, n_var) -> None:
     colunas[n_var].metric("Z ótimo", f"{valor:.2f}")
 
 
-def mostrar_precos_sombra(res, A, b, precos_sombra, n_rest) -> None:
-    """Mostra o preço-sombra de cada restrição e se ela está ativa ou com folga."""
+def mostrar_precos_sombra(precos_sombra, n_rest) -> None:
+    """Mostra o preço-sombra de cada restrição."""
     st.subheader("Preço-sombra das restrições")
     for i in range(n_rest):
-        folga = b[i] - A[i] @ res.x
-        ativa = abs(folga) < 1e-6
-        situacao = "ativa / recurso esgotado" if ativa else f"folga = {folga:.2f}"
-        st.write(f"**Restrição {i+1}** -> preço-sombra = **{precos_sombra[i]:.2f}**  ({situacao})")
+        st.write(f"**Restrição {i+1}** -> preço-sombra = **{precos_sombra[i]:.2f}**")
 
 
-def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_var, n_rest) -> None:
+def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_rest) -> None:
     """Aplica as variações Δb, verifica se são viáveis e checa o limite de validade.
 
     Compara o Z recalculado com a estimativa pelo preço-sombra: se forem iguais, a
@@ -78,10 +75,6 @@ def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_va
     colunas[1].metric("ΔZ estimado pelo preço-sombra", f"{delta_estimado:+.2f}")
 
     st.caption("Se o 'novo Z recalculado' bate com a estimativa pelo preço-sombra, a variação está dentro do limite de validade do preço-sombra. Se divergir, a base ótima mudou e o preço-sombra deixou de valer.")
-
-    with st.expander("Ver novo ponto ótimo"):
-        for j in range(n_var):
-            st.write(f"x{j+1} = {res2.x[j]:.2f}")
 
 
 
@@ -147,5 +140,5 @@ if st.button("Resolver", type="primary", use_container_width=True):
     precos_sombra = calcular_precos_sombra(res, maximizar)
 
     mostrar_ponto_otimo(res, valor, n_var)
-    mostrar_precos_sombra(res, A_np, b_np, precos_sombra, n_rest)
-    analisar_variacoes(c, A_np, b_np, variacoes, precos_sombra, valor, maximizar, n_var, n_rest)
+    mostrar_precos_sombra(precos_sombra, n_rest)
+    analisar_variacoes(c, A_np, b_np, variacoes, precos_sombra, valor, maximizar, n_rest)
