@@ -125,12 +125,15 @@ objetivo = st.radio("Objetivo", ["Maximizar", "Minimizar"], horizontal=True)
 maximizar = objetivo == "Maximizar"
 
 st.divider()
+
 c = ler_funcao_objetivo(n_var, maximizar)
 
 st.divider()
+
 A, b, variacoes = ler_restricoes(n_var, n_rest)
 
 st.divider()
+
 if st.button("Resolver", type="primary", use_container_width=True):
     A_np = np.array(A, dtype=float)
     b_np = np.array(b, dtype=float)
