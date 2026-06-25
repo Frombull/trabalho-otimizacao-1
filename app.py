@@ -30,7 +30,6 @@ def calcular_precos_sombra(res, maximizar) -> list:
     return [-d if maximizar else d for d in duais]
 
 
-
 # Funções de exibição (cada uma desenha uma parte do resultado na tela)
 def mostrar_ponto_otimo(res, valor, n_var) -> None:
     """Mostra o valor ótimo de cada variável e do Z."""

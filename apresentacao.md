@@ -12,7 +12,7 @@ restrição e a **análise das variações**. O cálculo em si usa a biblioteca 
 
 ## 2. As 3 partes do código
 
-O código é dividido em **três blocos - calcular, exibir e ler dados** - pra ficar fácil de
+O código é dividido em três blocos: **calcular**, **exibir** e **ler dados** - pra ficar fácil de
 entender: cada função faz uma coisa só.
 
 ### Bloco 1 - Cálculo (onde o problema é resolvido)
