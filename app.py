@@ -47,7 +47,7 @@ def mostrar_precos_sombra(precos_sombra, n_rest) -> None:
         st.write(f"**Restrição {i+1}** -> preço-sombra = **{precos_sombra[i]:.2f}**")
 
 
-def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_rest) -> None:
+def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_rest, res, n_var) -> None:
     """Aplica as variações Δb, verifica se são viáveis e checa o limite de validade.
 
     Compara o Z recalculado com a estimativa pelo preço-sombra: se forem iguais, a
@@ -72,6 +72,15 @@ def analisar_variacoes(c, A, b, variacoes, precos_sombra, valor, maximizar, n_re
     colunas = st.columns(2)
     colunas[0].metric("Novo Z ótimo (recalculado)", f"{valor2:.2f}", delta=f"{valor2 - valor:+.2f}")
     colunas[1].metric("ΔZ estimado pelo preço-sombra", f"{delta_estimado:+.2f}")
+
+    st.markdown("**Novo ponto ótimo de operação**")
+    colunas_x = st.columns(n_var)
+    for j in range(n_var):
+        colunas_x[j].metric(
+            f"x{j+1}",
+            f"{res2.x[j]:.2f}",
+            delta=f"{res2.x[j] - res.x[j]:+.2f}",
+        )
 
     st.caption("Se o 'novo Z recalculado' bate com a estimativa pelo preço-sombra, a variação está dentro do limite de validade do preço-sombra. Se divergir, a base ótima mudou e o preço-sombra deixou de valer.")
 
@@ -140,4 +149,4 @@ if st.button("Resolver", type="primary", use_container_width=True):
 
     mostrar_ponto_otimo(res, valor, n_var)
     mostrar_precos_sombra(precos_sombra, n_rest)
-    analisar_variacoes(c, A_np, b_np, variacoes, precos_sombra, valor, maximizar, n_rest)
+    analisar_variacoes(c, A_np, b_np, variacoes, precos_sombra, valor, maximizar, n_rest, res, n_var)
