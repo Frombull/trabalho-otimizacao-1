@@ -126,9 +126,9 @@ def limpar_campos():
     st.session_state.pop("analise", None)
 
 
-b_ex1, b_ex2 = st.columns([2, 1])
-b_ex1.button("Carregar Exemplo (Fábrica de Móveis)", on_click=carregar_exemplo, width="stretch")
-b_ex2.button("Limpar Campos", on_click=limpar_campos, width="stretch")
+barra_topo = st.container(horizontal=True)
+barra_topo.button("Carregar Exemplo da Fábrica de Móveis", on_click=carregar_exemplo)
+barra_topo.button("Limpar a poha toda", on_click=limpar_campos)
 
 st.session_state.setdefault("n_restr", 3)
 c1, c2, c3 = st.columns(3)
