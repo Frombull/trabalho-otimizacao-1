@@ -1,72 +1,35 @@
-# Trabalho M210
+# Resolvedor de PPL [Simplex] [M210]
 
-| Nome                           | Matrícula | Curso |
-|--------------------------------|-----------|-------|
-| Marco Renzo Rodrigues Di Toro  | 150       | GES   |
-| Kawan Dos Reis Brito           | 162       | GES   |
-| Kauã Victor Garcia Siécola     | 1887      | GEC   |
-
---- 
-
-- **Ponto ótimo de operação** (valor de cada variável e do Z ótimo)
-- **Preço-sombra** de cada restrição
-- Se as **variações desejadas (Δb)** são viáveis
-- O **novo lucro ótimo** e o **limite de validade do preço-sombra**
-
-## Rodando essa budega
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-### Exemplo:
-Máx Z = 3X + 5Y
-- X ≤ 4
-- 2Y ≤ 12
-- 3X + 2Y ≤ 18
-
-Resultado esperado: X=2, Y=6, Z=36, preços-sombra = (0, 1.5, 1)
-
----
-
-### Fluxograma com mermaid:
-
+### Fluxo
 
 ```mermaid
 flowchart TD
-    A["<b>Entrada</b><br/>c, matriz A, vetor b, Δb"]
-    A -->|Resolver| B["Monta A e b (NumPy)"]
+    A["Entrada de dados (FO, restrições e Δb inicial)"] --> B["Resolver Simplex Tableau"]
+    B --> C{"Solução ótima encontrada?"}
+    C -- "Não" --> D["Exibir erro (LD negativo, ilimitado ou não convergiu)"]
+    C -- "Sim" --> E["Extrair ponto ótimo, Z*, B⁻¹, preços-sombra e faixas de viabilidade"]
+    E --> F["Exibir Quadro Simplex Ótimo e tabela de sensibilidade"]
+    F --> G{"Há Δb inicial?"}
+    G -- "Não" --> N["Informar Δb (sem recalcular Simplex)"]
+    N --> H["Calcular LD_novo = LD + B⁻¹·Δb e Z_novo = Z* + yᵀ·Δb"]
+    G -- "Sim" --> H
+    H --> I{"LD_novo >= 0?"}
+    I -- "Não" --> K["Alteração inviável para a base ótima atual"]
+    I -- "Sim" --> J["Alteração viável: exibir novo lucro e novo ponto ótimo"]
+    K --> L{"Testar novos Δb?"}
+    J --> L
+    L -- "Não" --> M["Fim"]
+    L -- "Sim" --> H
 
-    B --> C["<b>resolver_ppl()</b><br/>linprog / Simplex"]
+    classDef entrada fill:#e8f1fc,stroke:#5b9bd5,color:#1f2937
+    classDef processo fill:#f1f5f9,stroke:#64748b,color:#1f2937
+    classDef decisao fill:#fef9e7,stroke:#d4a017,color:#1f2937
+    classDef sucesso fill:#eafaf1,stroke:#2e8b57,color:#1f2937
+    classDef erro fill:#fdecec,stroke:#c0392b,color:#1f2937
 
-    C --> D{"Viável?"}
-    D -->|Não| E["Erro: inviável"]
-
-    D -->|Sim| F["<b>preço-sombra</b><br/>valores duais"]
-
-    F --> G["Ponto ótimo (x, Z)"]
-    F --> H["Preço-sombra"]
-
-    G --> I["<b>Análise Δb</b><br/>recalcula Z"]
-    H --> I
-
-    I --> J{"Δb viável?"}
-    J -->|Não| K["Erro: inviável"]
-    J -->|Sim| L{"Z bate com<br/>a estimativa?"}
-
-    L -->|Sim| M["Dentro do limite"]
-    L -->|Não| N["Base mudou"]
-
-    classDef codigo fill:#dbeafe,stroke:#2563eb,color:#1e293b;
-    classDef mat fill:#ffedd5,stroke:#ea580c,color:#1e293b;
-    classDef erro fill:#fee2e2,stroke:#dc2626,color:#1e293b;
-
-    class A,B,G,H,I codigo;
-    class C,F,L,M,N mat;
-    class E,K erro;
+    class A,N entrada
+    class B,E,F,H,M processo
+    class C,G,I,L decisao
+    class J sucesso
+    class D,K erro
 ```
-
----
-
-### Descrição do trabalho:
-> Desenvolver um código em Python para resolver um PPL com 2,3 ou 4 variáveis, usando o método Simplex Tableau. Deverá possuir uma entrada de dados amigável assim como uma saída. É permitido o uso de bibliotecas específicas de programação linear. A entrada de dados é composta pelos coeficientes da função objetivo e das restrições. Além das variações desejadas em cada restrição. A saída de dados deve conter o ponto ótimo de operação, o preço-sombra de cada restrição e se as alterações desejadas são viáveis. Caso as alterações sejam viáveis, apresentar o novo lucro ótimo e o limite de validade do preço-sombra. Deve ser desenvolvida uma interface gráfica (frontend) utilizando bibliotecas para este fim. Exemplo: streamlit, panel, gradio, etc.
