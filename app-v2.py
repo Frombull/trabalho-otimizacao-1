@@ -34,7 +34,7 @@ def resolver_ppl(c, A, b, maximizar: bool = True) -> dict:
     # SciPy só minimiza: para maximizar usamos -c
     res = linprog(c=-c_arr if maximizar else c_arr, A_ub=A_arr, b_ub=b_arr, bounds=(0, None), method="highs")
     if not res.success:
-        erros = {2: "Problema inviável (sem solução).", 3: "Problema ilimitado."}
+        erros = {2: "Problema inviável.", 3: "Problema ilimitado."}
         raise ValueError(erros.get(res.status, f"Erro ao resolver: {res.message}"))
 
     z_otimo = float(-res.fun if maximizar else res.fun)
