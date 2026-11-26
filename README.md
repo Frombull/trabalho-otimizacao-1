@@ -33,3 +33,10 @@ flowchart TD
     class J sucesso
     class D,K erro
 ```
+
+### Integrantes
+
+| Nome | Matrícula | Curso |
+|---|---|---|
+| Marco Renzo Rodrigues Di Toro | 150 | GES |
+| Igor Nogueira Olvio | ??? | ??? |
