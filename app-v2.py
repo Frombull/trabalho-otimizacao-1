@@ -98,7 +98,7 @@ def analisar_alteracoes(sol: dict, deltas: list[float]):
 
 # --- Interface Streamlit ---
 st.set_page_config(page_title="M210 - Simplex Tableau (v2)", layout="centered")
-st.html("<style>.block-container{max-width:960px}[data-testid='stMetricValue']{font-size:1.75rem}</style>")
+st.html("<style>.block-container{max-width:960px}[data-testid='stMetricValue']{font-size:1.75rem}[data-testid='stVerticalBlockBorderWrapper']{border-radius:0}</style>")
 st.title("Simplex Tableau - M210")
 
 
@@ -211,6 +211,6 @@ if "sol" in st.session_state:
 
         if viavel:
             ponto_str = ", ".join(f"x{j + 1} = {fmt(novo_ponto.get(f'x{j + 1}', 0.0))}" for j in range(n))
-            st.success(f"Alterações VIÁVEIS. Novo {'lucro' if is_max else 'valor'} ótimo: {fmt(novo_z)} | Novo ponto: {ponto_str}")
+            st.container(border=True).markdown(f"**Alterações VIÁVEIS. Novo {'lucro' if is_max else 'valor'} ótimo: {fmt(novo_z)} | Novo ponto: {ponto_str}**")
         else:
-            st.error("Alterações INVIÁVEIS para a base ótima atual: pelo menos uma variável básica ficou negativa.")
+            st.container(border=True).markdown("**Alterações INVIÁVEIS para a base ótima atual: pelo menos uma variável básica ficou negativa.**")
