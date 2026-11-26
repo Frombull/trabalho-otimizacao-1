@@ -1,9 +1,3 @@
-# Guia Rápido para Apresentação — `app-v2.py`
-
-Resumo direto de cada parte do código para apresentar ao professor, totalmente alinhado com [`app-v2.py`](app-v2.py).
-
----
-
 ## Visão Geral
 - **Bibliotecas usadas:**
   - `scipy.optimize.linprog` (solver `highs`): resolve o PPL de forma numérica robusta (o enunciado permite bibliotecas de PL).

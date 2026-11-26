@@ -108,15 +108,15 @@ maximizar = objetivo == "Maximizar"
 
 st.subheader(f"Função Objetivo ({objetivo} Z)")
 cols_z = st.columns(n_vars)
-c = [cols_z[j].number_input(f"c{j + 1} (x{j + 1})", value=0.0, key=f"c_{j}") for j in range(n_vars)]
+c = [cols_z[j].number_input(f"c{j + 1} (x{j + 1})", value=None, placeholder="0", format="%g", key=f"c_{j}") or 0.0 for j in range(n_vars)]
 
 st.subheader("Restrições (<=) e Variações Iniciais (Δb)")
 A, b, deltas_ini = [], [], []
 for i in range(n_restr):
     cols = st.columns(n_vars + 2)
-    A.append([cols[j].number_input(f"R{i + 1} x{j + 1}", value=0.0, key=f"a_{i}_{j}") for j in range(n_vars)])
-    b.append(cols[n_vars].number_input(f"LD {i + 1}", value=0.0, key=f"b_{i}"))
-    deltas_ini.append(cols[n_vars + 1].number_input(f"Δb{i + 1}", value=0.0, key=f"di_{i}"))
+    A.append([cols[j].number_input(f"R{i + 1} x{j + 1}", value=None, placeholder="0", format="%g", key=f"a_{i}_{j}") or 0.0 for j in range(n_vars)])
+    b.append(cols[n_vars].number_input(f"LD {i + 1}", value=None, placeholder="0", format="%g", key=f"b_{i}") or 0.0)
+    deltas_ini.append(cols[n_vars + 1].number_input(f"Δb{i + 1}", value=None, placeholder="0", format="%g", key=f"di_{i}") or 0.0)
 
 modelo = (c, A, b, maximizar)
 resolver = st.button("Resolver Simplex", type="primary", use_container_width=True)
@@ -159,7 +159,7 @@ if "sol" in st.session_state:
     st.divider()
     st.subheader("Novas Alterações no Lado Direito (Sem Recalcular Simplex)")
     cols_d = st.columns(m)
-    deltas = [cols_d[j].number_input(f"Novo Δb{j + 1}", value=0.0, key=f"d_{j}") for j in range(m)]
+    deltas = [cols_d[j].number_input(f"Novo Δb{j + 1}", value=None, placeholder="0", format="%g", key=f"d_{j}") or 0.0 for j in range(m)]
 
     if st.button("Analisar Alterações"):
         st.session_state["analise"] = (deltas, *analisar_alteracoes(sol, deltas))
