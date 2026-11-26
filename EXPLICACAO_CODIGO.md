@@ -84,19 +84,20 @@ O código **NÃO chama `resolver_ppl` nem `linprog` novamente** ao analisar alte
 
 ---
 
-## 5. Interface Streamlit (linhas 99–174)
-- **Configuração e entradas (linhas 100–119):**
+## 5. Interface Streamlit (linhas 99–215)
+- **Atalhos de demonstração e entradas (linhas 100–151):**
+  - Botões `"Carregar Exemplo (Fábrica de Móveis)"` e `"Limpar Campos"` via callbacks `on_click` no `st.session_state`.
   - Seletor de número de variáveis (`2`, `3` ou `4`), número de restrições (`1` a `6`) e objetivo (`Maximizar` / `Minimizar`).
-  - Campos para coeficientes da função objetivo (`c1..cn`), coeficientes das restrições (`<=`), lados direitos (`LD`) e variações iniciais opcionais (`Δb`).
-- **Limpeza automática de estado (linhas 121–123):** se o usuário alterar `n_vars`, `n_restr` ou `maximizar`, limpa `sol` e `analise` do `st.session_state` para não misturar resultados de modelos diferentes.
-- **Botão `"Resolver Simplex"` (linhas 125–134):** chama `resolver_ppl`, salva o resultado em `st.session_state["sol"]` e, se houver algum `Δb` inicial diferente de zero, já executa `analisar_alteracoes`. Erros de modelo (inviável, ilimitado, base redundante) aparecem via `st.error`.
-- **Exibição do Resultado Ótimo (linhas 136–155):**
-  - Linha 1 de cartões (`st.metric`): `x1..xn` e `Lucro ótimo (Z*)` (ou `Valor ótimo (Z*)` em minimização).
-  - Linha 2 de cartões (`st.metric`): preços-sombra explícitos `PS1..PSm`.
+  - Campos para coeficientes da função objetivo (`c1..cn`), coeficientes das restrições (`<=`), lados direitos (`LD`) e variações iniciais opcionais (`Δb`), iniciando vazios com hint `0` (`value=None, placeholder="0"`).
+- **Limpeza automática de estado (linhas 152–157):** se o usuário alterar qualquer parâmetro do modelo (`c`, `A`, `b` ou `maximizar`), limpa `sol` e `analise` do `st.session_state` para não misturar resultados de modelos diferentes.
+- **Botão `"Resolver Simplex"` (linhas 159–167):** chama `resolver_ppl`, salva o resultado em `st.session_state["sol"]` e, se houver algum `Δb` inicial diferente de zero, já executa `analisar_alteracoes`. Erros de modelo (inviável, ilimitado, base redundante) aparecem via `st.error`.
+- **Exibição do Resultado Ótimo (linhas 169–189):**
+  - Destaque em largura total para `Lucro ótimo (Z*)` (ou `Valor ótimo (Z*)` em minimização), evitando truncamento em valores grandes.
+  - Linha de cartões (`st.metric`) para `x1..xn` e linha abaixo para preços-sombra explícitos `PS1..PSm`.
   - Tabela do **Quadro Simplex Ótimo** (colunas fixas, linha `Z` embaixo).
   - Tabela de **Preços-Sombra e Faixas de Viabilidade** (`LD Atual`, `Preço-Sombra`, `Δ Min`, `Δ Max`, `LD Min`, `LD Max`).
-- **Novas alterações sucessivas (linhas 157–174):**
-  - Campos para `Novo Δb1..Δbm` e botão `"Analisar Alterações"`, que chama **apenas** `analisar_alteracoes` usando a solução salva.
+- **Novas alterações sucessivas (linhas 191–215):**
+  - Campos para `Novo Δb1..Δbm`, atalho `"Preencher -10% nos recursos"` e botão `"Analisar Alterações"`, que chama **apenas** `analisar_alteracoes` usando a solução salva.
   - Mostra a tabela com os novos valores da base e informa se as alterações são **VIÁVEIS** (com novo `Z` e novo ponto `x1..xn`) ou **INVIÁVEIS**.
 
 ---

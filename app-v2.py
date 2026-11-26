@@ -98,12 +98,43 @@ def analisar_alteracoes(sol: dict, deltas: list[float]):
 
 # --- Interface Streamlit ---
 st.set_page_config(page_title="M210 - Simplex Tableau (v2)", layout="centered")
+st.html("<style>.block-container{max-width:960px}[data-testid='stMetricValue']{font-size:1.75rem}</style>")
 st.title("Simplex Tableau - M210")
 
+
+def carregar_exemplo():
+    """Preenche os campos com o problema da Fábrica de Móveis para demonstração."""
+    st.session_state.update({"n_vars": 4, "n_restr": 3, "objetivo": "Maximizar"})
+    for j, val in enumerate([80.0, 70.0, 100.0, 16.0]):
+        st.session_state[f"c_{j}"] = val
+    matriz_a = [[1.0, 1.0, 1.0, 4.0], [0.0, 1.0, 1.0, 2.0], [3.0, 2.0, 4.0, 0.0]]
+    for i, (linha, ld_val) in enumerate(zip(matriz_a, [250.0, 600.0, 500.0])):
+        for j, val in enumerate(linha):
+            st.session_state[f"a_{i}_{j}"] = val
+        st.session_state[f"b_{i}"] = ld_val
+        st.session_state[f"di_{i}"] = None
+    st.session_state.pop("sol", None)
+    st.session_state.pop("analise", None)
+
+
+def limpar_campos():
+    """Restaura os campos numéricos para vazio (hint 0) e limpa o resultado atual."""
+    for chave in list(st.session_state.keys()):
+        if chave.startswith(("c_", "a_", "b_", "di_", "d_")):
+            st.session_state[chave] = None
+    st.session_state.pop("sol", None)
+    st.session_state.pop("analise", None)
+
+
+b_ex1, b_ex2 = st.columns([2, 1])
+b_ex1.button("Carregar Exemplo (Fábrica de Móveis)", on_click=carregar_exemplo, width="stretch")
+b_ex2.button("Limpar Campos", on_click=limpar_campos, width="stretch")
+
+st.session_state.setdefault("n_restr", 3)
 c1, c2, c3 = st.columns(3)
-n_vars = c1.selectbox("Número de variáveis", [2, 3, 4], index=0)
-n_restr = int(c2.number_input("Número de restrições", min_value=1, max_value=6, value=3, step=1))
-objetivo = c3.radio("Objetivo", ["Maximizar", "Minimizar"], horizontal=True)
+n_vars = c1.selectbox("Número de variáveis", [2, 3, 4], key="n_vars")
+n_restr = int(c2.number_input("Número de restrições", min_value=1, max_value=6, step=1, key="n_restr"))
+objetivo = c3.radio("Objetivo", ["Maximizar", "Minimizar"], horizontal=True, key="objetivo")
 maximizar = objetivo == "Maximizar"
 
 st.subheader(f"Função Objetivo ({objetivo} Z)")
@@ -119,7 +150,7 @@ for i in range(n_restr):
     deltas_ini.append(cols[n_vars + 1].number_input(f"Δb{i + 1}", value=None, placeholder="0", format="%g", key=f"di_{i}") or 0.0)
 
 modelo = (c, A, b, maximizar)
-resolver = st.button("Resolver Simplex", type="primary", use_container_width=True)
+resolver = st.button("Resolver Simplex", type="primary", width="stretch")
 
 if resolver or ("sol" in st.session_state and st.session_state["sol"].get("modelo") != modelo):
     st.session_state.pop("sol", None)
@@ -141,33 +172,41 @@ if "sol" in st.session_state:
 
     st.divider()
     st.subheader("Resultado Ótimo")
-    cols_res = st.columns(n + 1)
+    st.metric("Lucro ótimo (Z*)" if is_max else "Valor ótimo (Z*)", fmt(sol["z_otimo"]))
+
+    cols_res = st.columns(n)
     for j in range(n):
         cols_res[j].metric(f"x{j + 1}", fmt(sol["x"][j]))
-    cols_res[n].metric("Lucro ótimo (Z*)" if is_max else "Valor ótimo (Z*)", fmt(sol["z_otimo"]))
 
     cols_ps = st.columns(m)
     for i in range(m):
         cols_ps[i].metric(f"PS{i + 1}", fmt(sol["precos_sombra"][i]))
 
     st.write("**Quadro Simplex Ótimo**")
-    st.dataframe(sol["quadro"], hide_index=True, use_container_width=True)
+    st.dataframe(sol["quadro"], hide_index=True, width="stretch")
 
     st.write("**Preços-Sombra e Faixas de Viabilidade**")
-    st.dataframe(sol["faixas"], hide_index=True, use_container_width=True)
+    st.dataframe(sol["faixas"], hide_index=True, width="stretch")
 
     st.divider()
     st.subheader("Novas Alterações no Lado Direito (Sem Recalcular Simplex)")
     cols_d = st.columns(m)
     deltas = [cols_d[j].number_input(f"Novo Δb{j + 1}", value=None, placeholder="0", format="%g", key=f"d_{j}") or 0.0 for j in range(m)]
 
-    if st.button("Analisar Alterações"):
+    b_an1, b_an2 = st.columns(2)
+    analisar = b_an1.button("Analisar Alterações", type="primary", width="stretch")
+    b_an2.button(
+        "Preencher -10% nos recursos",
+        on_click=lambda b_ref=sol["modelo"][2]: [st.session_state.__setitem__(f"d_{j}", round(-0.1 * v, 6)) for j, v in enumerate(b_ref)],
+        width="stretch",
+    )
+    if analisar:
         st.session_state["analise"] = (deltas, *analisar_alteracoes(sol, deltas))
 
     if "analise" in st.session_state:
         deltas_usados, viavel, tabela_base, novo_z, novo_ponto = st.session_state["analise"]
         st.write(f"**Alterações:** {', '.join(f'Δb{j + 1} = {fmt(deltas_usados[j])}' for j in range(m))}")
-        st.dataframe(tabela_base, hide_index=True, use_container_width=True)
+        st.dataframe(tabela_base, hide_index=True, width="stretch")
 
         if viavel:
             ponto_str = ", ".join(f"x{j + 1} = {fmt(novo_ponto.get(f'x{j + 1}', 0.0))}" for j in range(n))
