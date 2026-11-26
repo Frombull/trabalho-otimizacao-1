@@ -118,18 +118,20 @@ for i in range(n_restr):
     b.append(cols[n_vars].number_input(f"LD {i + 1}", value=0.0, key=f"b_{i}"))
     deltas_ini.append(cols[n_vars + 1].number_input(f"Δb{i + 1}", value=0.0, key=f"di_{i}"))
 
-if "sol" in st.session_state and st.session_state["sol"]["cfg"] != (n_vars, n_restr, maximizar):
+modelo = (c, A, b, maximizar)
+resolver = st.button("Resolver Simplex", type="primary", use_container_width=True)
+
+if resolver or ("sol" in st.session_state and st.session_state["sol"].get("modelo") != modelo):
     st.session_state.pop("sol", None)
     st.session_state.pop("analise", None)
 
-if st.button("Resolver Simplex", type="primary", use_container_width=True):
+if resolver:
     try:
         sol = resolver_ppl(c, A, b, maximizar=maximizar)
+        sol["modelo"] = modelo
         st.session_state["sol"] = sol
         if any(abs(d) > EPS for d in deltas_ini):
             st.session_state["analise"] = (deltas_ini, *analisar_alteracoes(sol, deltas_ini))
-        else:
-            st.session_state.pop("analise", None)
     except ValueError as err:
         st.error(str(err))
 
