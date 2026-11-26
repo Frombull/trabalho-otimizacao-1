@@ -1,5 +1,3 @@
-# Resolvedor de PPL [Simplex] [M210]
-
 ### Fluxo
 
 ```mermaid
