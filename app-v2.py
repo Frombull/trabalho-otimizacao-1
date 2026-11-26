@@ -150,6 +150,7 @@ for i in range(n_restr):
     deltas_ini.append(cols[n_vars + 1].number_input(f"Δb{i + 1}", value=None, placeholder="0", format="%g", key=f"di_{i}") or 0.0)
 
 modelo = (c, A, b, maximizar)
+st.html("<div style='height:12px'></div>")
 resolver = st.button("Resolver Simplex", type="primary", width="stretch")
 
 if resolver or ("sol" in st.session_state and st.session_state["sol"].get("modelo") != modelo):
