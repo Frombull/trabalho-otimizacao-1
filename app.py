@@ -86,7 +86,7 @@ def fmt(v):
 
 # --- Interface Streamlit ---
 st.set_page_config(page_title="M210 - Simplex Tableau", layout="centered")
-st.title("Simplex Tableau — M210")
+st.title("Simplex Tableau - M210")
 
 col1, col2 = st.columns(2)
 n_vars = col1.selectbox("Número de variáveis", [2, 3, 4], index=0)
