@@ -144,6 +144,10 @@ if "sol" in st.session_state:
         cols_res[j].metric(f"x{j + 1}", fmt(sol["x"][j]))
     cols_res[n].metric("Lucro ótimo (Z*)" if is_max else "Valor ótimo (Z*)", fmt(sol["z_otimo"]))
 
+    cols_ps = st.columns(m)
+    for i in range(m):
+        cols_ps[i].metric(f"PS{i + 1}", fmt(sol["precos_sombra"][i]))
+
     st.write("**Quadro Simplex Ótimo**")
     st.dataframe(sol["quadro"], hide_index=True, use_container_width=True)
 
